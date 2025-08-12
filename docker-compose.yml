@@ -1,0 +1,25 @@
+services:
+  web:
+    build: .
+    container_name: bubt-restaurant-web
+    ports:
+      - "8000:80"
+    depends_on:
+      db:
+        condition: service_healthy
+  
+  db:
+    image: mysql:lts
+    container_name: bubt-restaurant-db
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: bubtAI
+      MYSQL_DATABASE: ctf
+      MYSQL_USER: ctf
+      MYSQL_PASSWORD: ctf123
+    volumes:
+      - ./src/sql/db.sql:/docker-entrypoint-initdb.d/1.sql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-p123"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
